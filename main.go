@@ -30,13 +30,15 @@ func read(path string) error {
 			continue
 		}
 
-		ts, err := time.Parse("Jan 2 3:04:05 PM MST", line)
+		ts, err := time.Parse("Jan 2 3:04:05 PM MST 2006", line+" 2025")
 		if err != nil {
 			return fmt.Errorf("error parsing record %d: %w", i, err)
 		}
 
 		if ts.Month() == time.January || ts.Month() == time.February {
-			targetDates = append(targetDates, ts)
+			if time.Since(ts) < 14*24*time.Hour {
+				targetDates = append(targetDates, ts)
+			}
 		}
 	}
 
