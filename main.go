@@ -1,12 +1,12 @@
 package main
 
 import (
-	"encoding/csv"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"sort"
 	"strings"
 	"time"
 )
@@ -42,21 +42,15 @@ func read(path string) error {
 		}
 	}
 
-	r := csv.NewReader(f)
-	r.LazyQuotes = true
-
-	var d time.Duration
+	var gaps []time.Duration
 	for i := 0; i < len(targetDates)-1; i++ {
-		j := i + 1
-
-		gap := targetDates[j].Sub(targetDates[i])
-		fmt.Println(gap)
-		if gap > d {
-			d = gap
-		}
+		gaps = append(gaps, targetDates[i+1].Sub(targetDates[i]))
 	}
 
-	fmt.Println("largest gap", d)
+	sort.Slice(gaps, func(i, j int) bool { return gaps[i] > gaps[j] })
+
+	fmt.Println(gaps)
+	fmt.Println(gaps[:14])
 
 	return nil
 }
